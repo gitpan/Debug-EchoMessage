@@ -29,10 +29,10 @@ use ExtUtils::AutoInstall (
     -version        => '0.40',
 );
 WriteMakefile(
-    DISTNAME        => 'Debug-EchoMessage-1.00.tar.gz',
-    ABSTRACT        => ''                            ,
+    DISTNAME        => 'Debug-EchoMessage-1.01.tar.gz',
+    ABSTRACT        => 'Display debug messages based on levels',
     NAME            => 'Debug::EchoMessage'          ,
-    PREREQ_PM       => {Test::Harness => 0.1,Test::More => 0.45,},
+    PREREQ_PM       => {Test::Harness => 0.1,Test::More => 0.45,Debug::EchoMessage => 0.01,},
     AUTHOR          => 'geotiger2001@yahoo.com'      ,
-    VERSION         => 1.00                          ,
+    VERSION         => 1.01                          ,
 );

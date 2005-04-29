@@ -1,5 +1,14 @@
+NAME
+    Debug::EchoMessage - Display debug messages based on levels
+
 SYNOPSIS
+        my $self = bless {}, "main";
         use Debug::EchoMessage;
+        $self->debug(2);   # set debug level to 2
+        # The level 3 message will not be displayed
+        $self->echoMSG("This is level 1 message.", 1);
+        $self->echoMSG("This is level 2 message.", 2);
+        $self->echoMSG("This is level 3 message.", 3);  
 
 DESCRIPTION
     The package contains the modules can be used for debuging or displaying
@@ -105,6 +114,9 @@ CODING HISTORY
 
     * Version 1.00
         06/25/2002 (htu) - added HTML format in disp_param
+
+    * Version 1.01
+        06/25/2002 (htu) - fixed the NAME title
 
 FUTURE IMPLEMENTATION
     * no plan yet

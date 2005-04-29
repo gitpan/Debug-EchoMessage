@@ -11,11 +11,21 @@ our %EXPORT_TAGS = (
   all => [@EXPORT_OK],
   echo_msg => [qw(debug echoMSG disp_param)],
 );
-our $VERSION = 1.00;
+our $VERSION = 1.01;
+
+=head1 NAME
+
+Debug::EchoMessage - Display debug messages based on levels
 
 =head1 SYNOPSIS
 
+    my $self = bless {}, "main";
     use Debug::EchoMessage;
+    $self->debug(2);   # set debug level to 2
+    # The level 3 message will not be displayed
+    $self->echoMSG("This is level 1 message.", 1);
+    $self->echoMSG("This is level 2 message.", 2);
+    $self->echoMSG("This is level 3 message.", 3);  
 
 =head1 DESCRIPTION
 
@@ -221,6 +231,10 @@ sub disp_param {
 =item * Version 1.00
 
 06/25/2002 (htu) - added HTML format in disp_param 
+
+=item * Version 1.01
+
+06/25/2002 (htu) - fixed the NAME title
 
 =back
 
