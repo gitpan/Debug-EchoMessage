@@ -36,7 +36,7 @@ DESCRIPTION
 
     Return: the debug level or set the debug level.
 
-  echoMSG($msg, $lvl)
+  echoMSG($msg, $lvl, $fh)
 
     Input variables:
 
@@ -47,6 +47,8 @@ DESCRIPTION
       $lvl - the message level is assigned to the message.
              If it is higher than the debug level, then
              the message will not be displayed.
+      $fh  - file handler, or set the file hanlder in this parameter
+             $ENV{FH_DEBUG_LOG}
 
     Variables used or routines called:
 
@@ -81,12 +83,13 @@ DESCRIPTION
     i.e., 0, and '1' will be displayed. The higher level messages will not
     be displayed.
 
-  disp_param($arf,$lzp)
+  disp_param($arf,$lzp, $fh)
 
     Input variables:
 
       $arf - array reference
       $lzp - number of blank space indented in left
+      $fh  - file handler
 
     Variables used or routines called:
 
@@ -116,7 +119,12 @@ CODING HISTORY
         06/25/2002 (htu) - added HTML format in disp_param
 
     * Version 1.01
-        06/25/2002 (htu) - fixed the NAME title
+        04/25/2005 (htu) - fixed the NAME title
+
+    * Version 1.02
+        05/06/2005 (htu) - added file handler parameter so that messages can
+        be logged. The file handler can be passed through
+        $ENV{FH_DEBUG_LOG}.
 
 FUTURE IMPLEMENTATION
     * no plan yet

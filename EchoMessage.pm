@@ -11,7 +11,7 @@ our %EXPORT_TAGS = (
   all => [@EXPORT_OK],
   echo_msg => [qw(debug echoMSG disp_param)],
 );
-our $VERSION = 1.01;
+our $VERSION = 1.02;
 
 =head1 NAME
 
@@ -66,7 +66,7 @@ sub debug {
     @_ ? ($s->{_debug}=shift) : return $s->{_debug};
 }
 
-=head2 echoMSG($msg, $lvl)
+=head2 echoMSG($msg, $lvl, $fh)
 
 Input variables:
 
@@ -77,6 +77,8 @@ Input variables:
   $lvl - the message level is assigned to the message.
          If it is higher than the debug level, then
          the message will not be displayed.
+  $fh  - file handler, or set the file hanlder in this parameter
+         $ENV{FH_DEBUG_LOG}
 
 Variables used or routines called:
 
@@ -118,7 +120,9 @@ sub echoMSG {
     # my ($c_pkg,$c_fn,$c_ln) = caller;
     # my $self = ref($_[0])?shift:(bless {},$c_pkg);
     my $self = shift;
-    my ($msg,$lvl) = @_;
+    my ($msg,$lvl, $fh) = @_;
+    $fh = (exists $ENV{FH_DEBUG_LOG})?$ENV{FH_DEBUG_LOG}:"";
+    $fh = "" if !$fh || ($fh && ref($fh) !~ /(IO::File|GLOB)/);  
     if (!defined($msg)) { return; }      # return if no msg
     if (!defined($lvl)) { $lvl = 0; }    # default level to 0
     my $class = ref($self)||$self;       # get class name
@@ -126,20 +130,25 @@ sub echoMSG {
     if (!$dbg) { return; }               # return if not debug
     my $ref = ref($msg);
     if ($ref eq $class) {
-        if ($lvl <= $dbg && $dbg < 200) { $self->disp_param($msg); }
+        if ($lvl <= $dbg) { $self->disp_param($msg); }
     } else {
+        $msg = "<h2>$msg</h2>" if exists $ENV{QUERY_STRING} && 
+            $msg =~ /^\s*\d+\.\s+\w+/; 
         $msg = "$msg\n";
-        if (exists $ENV{QUERY_STRING}) { $msg =~ s/\n/<br>\n/gm; }
-        if ($lvl <= $dbg && $dbg < 200) { print $msg; }
+        $msg =~ s/\n/<br>\n/gm if exists $ENV{QUERY_STRING};
+        if ($lvl <= $dbg) { 
+            if ($fh) { print $fh $msg; } else { print $msg; }
+        }
     }
 }
 
-=head2 disp_param($arf,$lzp)
+=head2 disp_param($arf,$lzp, $fh)
 
 Input variables:
 
   $arf - array reference
   $lzp - number of blank space indented in left
+  $fh  - file handler
 
 Variables used or routines called:
 
@@ -159,8 +168,10 @@ Return: Display the content of the array.
 
 
 sub disp_param {
-    my ($self, $hrf, $lzp) = @_;
+    my ($self, $hrf, $lzp, $fh) = @_;
     $self->echoMSG(" -- displaying parameters...");
+    $fh = (exists $ENV{FH_DEBUG_LOG})?$ENV{FH_DEBUG_LOG}:"";
+    $fh = "" if !$fh || ($fh && ref($fh) !~ /(IO::File|GLOB)/);  
     if (!$lzp) { $lzp = 15; } else { $lzp +=4; }
     my $fmt;
     if (exists $ENV{QUERY_STRING}) {
@@ -181,7 +192,8 @@ sub disp_param {
             if ($v =~ /([-\w_]+)\/(\w+)\@(\w+)/) {
                 $v =~ s{(\w+)/(\w+)\@}{$1/\*\*\*\@};
             }
-            printf $fmt, $k, $v;
+            if ($fh) { printf $fh $fmt, $k, $v;
+            } else   { printf $fmt, $k, $v; }
             if (ref($v) =~ /^(HASH|ARRAY)$/ ||
                 $v =~ /.*=(HASH|ARRAY)/) {
                 my $db1 = $self->debug;
@@ -189,7 +201,7 @@ sub disp_param {
                 # print "$k = ${$hrf}{$k}: @{${$hrf}{$k}}\n";
                 $self->disp_param(${$hrf}{$k},$lzp);
                 $self->debug($db1);
-                print "\n";
+                if ($fh) { print $fh "\n"; } else { print "\n"; }
             }
         }
     } elsif (ref($hrf) eq 'ARRAY' || $hrf =~ /.*=ARRAY/) {
@@ -199,14 +211,15 @@ sub disp_param {
             if ($v =~ /([-\w_]+)\/(\w+)\@(\w+)/) {
                 $v =~ s{(\w+)/(\w+)\@}{$1/\*\*\*\@};
             }
-            printf $fmt, $i, $v;
+            if ($fh) { printf $fh $fmt, $i, $v;
+            } else   { printf $fmt, $i, $v; }
             if (ref($v) =~ /^(HASH|ARRAY)$/ ||
                 $v =~ /.*=(HASH|ARRAY)/) {
                 my $db1 = $self->debug;
                 $self->debug(0);
                 $self->disp_param(${$hrf}[$i],$lzp);
                 $self->debug($db1);
-                print "\n";
+                if ($fh) { print $fh "\n"; } else { print "\n"; }
             }
         }
     }
@@ -234,7 +247,13 @@ sub disp_param {
 
 =item * Version 1.01
 
-06/25/2002 (htu) - fixed the NAME title
+04/25/2005 (htu) - fixed the NAME title
+
+=item * Version 1.02
+
+05/06/2005 (htu) - added file handler parameter so that messages can
+be logged. The file handler can be passed through $ENV{FH_DEBUG_LOG}.
+
 
 =back
 

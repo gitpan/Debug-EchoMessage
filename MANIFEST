@@ -2,5 +2,5 @@ EchoMessage.pm
 test.pl
 Makefile.PL
 ./t/EchoMessage.t
-Debug-EchoMessage-1.01.readme
+Debug-EchoMessage-1.02.readme
 README
