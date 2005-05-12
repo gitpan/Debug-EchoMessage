@@ -20,6 +20,7 @@ BEGIN {
     }
 }
 
+use lib 'inc';
 # pre-install handler; takes $module_name and $version
 sub MY::preinstall  { return 1; }   # return false to skip install
 
@@ -29,10 +30,10 @@ use ExtUtils::AutoInstall (
     -version        => '0.40',
 );
 WriteMakefile(
-    DISTNAME        => 'Debug-EchoMessage-1.02.tar.gz',
+    DISTNAME        => 'Debug-EchoMessage-1.03.tar.gz',
     ABSTRACT        => 'Display debug messages based on levels',
     NAME            => 'Debug::EchoMessage'          ,
     PREREQ_PM       => {Test::Harness => 0.1,Test::More => 0.45,},
-    AUTHOR          => ''                            ,
-    VERSION         => 1.02                          ,
+    AUTHOR          => 'geotiger2001@yahoo.com'      ,
+    VERSION         => 1.03                          ,
 );

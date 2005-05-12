@@ -83,6 +83,10 @@ DESCRIPTION
     i.e., 0, and '1' will be displayed. The higher level messages will not
     be displayed.
 
+    This method displays or writes the message based on debug level. The
+    filehandler is provided through $fh or $ENV{FH_DEBUG_LOG}, and the
+    outputs are written to the file.
+
   disp_param($arf,$lzp, $fh)
 
     Input variables:
@@ -99,11 +103,72 @@ DESCRIPTION
 
     How to use:
 
-      use Fax::DataFax::Subs qw(:echo_msg);
+      use Debug::EchoMessage qw(:echo_msg);
       my $self= bless {}, "main";
       $self->disp_param($arf);
 
     Return: Display the content of the array.
+
+    This method recursively displays the contents of an array. If a
+    filehandler is provided through $fh or $ENV{FH_DEBUG_LOG}, the outputs
+    are written to the file.
+
+  start_log($dtl, $brf, $cns)
+
+    Input variables:
+
+      $dtl - file name for detailed log
+      $brf - file name for brief log
+      $cns - a list of fields which are stored in brief log
+      $arg - command line arguments
+
+    Variables used or routines called:
+
+      echoMSG - print debug messages
+
+    How to use:
+
+      use Debug::EchoMessage qw(:log);
+      my $self= bless {}, "main";
+      my $ar = $self->start_log('details.log','brief.log',
+        'start_time,end_time,elapsed_time,file_tranferred,status');
+
+    Return: a hash array containing the fields in $cns.
+
+    This method creates log files if they do not exist and prepare a hash
+    array to store needed fields for end_log. The hash array has the
+    following elements:
+
+      cns    - a list of field names separated by commas
+      fld    - a hash array containing the field defined in cns.
+      fn_brf - file name for brief log
+      fh_brf - file handler for brief log
+      fn_dtl - file name for detail log
+      fh_dtl - file handler for detail log
+
+    If the *cns* is not specifed, then it defaults to
+    start_time,end_time,elapsed_time,user,args,result.
+
+  end_log($ar)
+
+    Input variables:
+
+      $ar  - array ref returned from start_log. The elements can
+             be populated in before end_log.
+
+    Variables used or routines called:
+
+      strftime - time formater from POSIX
+      disp_param - display parameters
+
+    How to use:
+
+      use Debug::EchoMessage qw(:log);
+      my $self= bless {}, "main";
+      my $ar = $self->start_log('details.log','brief.log');
+      $self->end_log($ar);
+
+    Return: none.
 
 CODING HISTORY
     * Version 0.01
@@ -125,6 +190,9 @@ CODING HISTORY
         05/06/2005 (htu) - added file handler parameter so that messages can
         be logged. The file handler can be passed through
         $ENV{FH_DEBUG_LOG}.
+
+    * Version 1.03
+        This version adds the start_log and end_log routines.
 
 FUTURE IMPLEMENTATION
     * no plan yet

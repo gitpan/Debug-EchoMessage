@@ -8,7 +8,7 @@ use Test::More qw(no_plan);
 
 my $class = 'main';
 my $obj = bless {}, $class; 
-use Debug::EchoMessage; 
+use Debug::EchoMessage qw(:all); 
 
 isa_ok($obj, $class);
 
